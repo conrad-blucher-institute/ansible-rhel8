@@ -1,0 +1,20 @@
+# Ansible code to install docker-compose on linux VM
+# To run this, example: (note: the version may need the 'v') ansible-playbook install-docker-compose-rhel8.yml --ask-become-pass --extra-vars "docker_compose_version=v2.7.0"
+# Please visit this url for version name: https://github.com/docker/compose/releases/
+- hosts: all
+  vars:
+    docker_compose_version: "{{ docker_compose_version }}"
+  become: yes
+  gather_facts: false
+  tasks:
+    - name: Checking docker_compose_version argument
+      fail:
+        msg: docker_compose_version extra vars is not defined
+      when: docker_compose_version is not defined
+
+    - name: Install docker-compose
+      get_url:
+        url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64"
+        dest: /usr/local/bin/docker-compose
+        mode: 'u+x,g+x'
+        register: docker_compose_install
